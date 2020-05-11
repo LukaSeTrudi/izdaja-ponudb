@@ -1,4 +1,9 @@
 <?php
+
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, X-Requested-With");
+
     $_servername = "ec2-79-125-26-232.eu-west-1.compute.amazonaws.com";
     $_username = "dywvwygvrkyosf";
     $_password = "56f7dddbd5018286f8201ce3d0f557f6608bd18729061f7c90cc42fc48b0d2cb";
