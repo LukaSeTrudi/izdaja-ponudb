@@ -1,6 +1,32 @@
 <template>
   <div class="home">
-    <table>
+	<div class="upper">
+		<form id="filters" method="POST">
+			<input type="hidden" name="filter" value="neki">
+			Storitev: <input type="text" name="storitev">
+			Stranka: 
+			<select name="stranka">
+				<option value=""></option>
+				<option v-for="s in stranke" :key="s.id" :value="s.ime">{{s.ime}}</option>
+			</select>
+			Delavec:
+			<select name="delavec">
+				<option value=""></option>
+				<option v-for="s in delavci" :key="s.id" :value="s.ime">{{s.ime}}</option>
+			</select>
+			Stanje:
+			<select name="stanje">
+				<option value=""></option>
+				<option v-for="s in stanja" :key="s.id" :value="s.stanje">{{s.stanje}}</option>
+			</select>
+			Filtriraj
+			<input type="button" value="Filtriraj" @click="filter()">
+		</form>
+		<button>
+		<JsonExcel :data="storitve">Export to excel</JsonExcel>
+		</button>
+	</div>
+	<table>
       <thead>
         <th>Storitev</th>
         <th>Opis</th>
@@ -26,19 +52,54 @@
 </template>
 
 <script>
+import JsonExcel from "vue-json-excel";
+
 export default {
   name: 'Home',
   data() {
     return {
-      storitve: [],
+	storitve: [],
+	stranke: [],
+	stanja: [],
+	delavci: [],
     };
+  },
+  methods: {
+	filter() {
+		fetch("https://izdaja-ponudb.herokuapp.com/dobi-ponudbe.php", {
+		method: 'POST',
+		body: new FormData(document.getElementById('filters')),
+		})
+		.then(response => response.json())
+		.then(result => {
+			this.storitve = result;
+		});
+	}
+  },
+  components: {
+	JsonExcel,
   },
   created(){
     fetch("https://izdaja-ponudb.herokuapp.com/dobi-ponudbe.php")
     .then(response => response.json())
     .then(data => {
       this.storitve = data;
-    });
+	});
+	fetch("https://izdaja-ponudb.herokuapp.com/dobi-stanja.php")
+	.then(response => response.json())
+    .then(data => {
+      this.stanja = data;
+	});
+	fetch("https://izdaja-ponudb.herokuapp.com/dobi-stranke.php")
+	.then(response => response.json())
+    .then(data => {
+      this.stranke = data;
+	});
+	fetch("https://izdaja-ponudb.herokuapp.com/dobi-delavce.php")
+	.then(response => response.json())
+    .then(data => {
+      this.delavci = data;
+	});
   }
   
 }
@@ -51,7 +112,12 @@ table {
 	margin: 50px auto;
 }
 
-
+.upper {
+	display: flex;
+}
+form.input, form.select {
+	margin-right: 10px;
+}
 /* Zebra striping */
 
 tr:nth-of-type(odd) {
